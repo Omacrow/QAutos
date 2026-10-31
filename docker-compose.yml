@@ -1,0 +1,74 @@
+# Local development stack. Usage:  docker compose up --build
+# Web: http://localhost:3000  API: http://localhost:8000/docs
+# Files go to a volume shared by api and worker (STORAGE_BACKEND=local). To test
+# against R2/S3 instead, set STORAGE_BACKEND=s3 and the S3_* variables in .env.
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: sqa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sqa"]
+      interval: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 20
+
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    env_file: [.env]
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql://sqa_app:sqa_app_dev@postgres:5432/sqa
+      DATABASE_URL_MIGRATIONS: postgresql://postgres:postgres@postgres:5432/sqa
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+      LOCAL_STORAGE_DIR: /data/storage
+      EMBEDDINGS_PROVIDER: ${EMBEDDINGS_PROVIDER:-hash}
+    volumes: [storage:/data/storage]
+    command: sh -c "alembic upgrade head && uvicorn sqa.main:create_app --factory --host 0.0.0.0 --port 8000"
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    build: { context: ., dockerfile: apps/api/Dockerfile.worker }
+    env_file: [.env]
+    environment:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql://sqa_app:sqa_app_dev@postgres:5432/sqa
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+      LOCAL_STORAGE_DIR: /data/storage
+      EMBEDDINGS_PROVIDER: ${EMBEDDINGS_PROVIDER:-hash}
+    volumes: [storage:/data/storage]
+    depends_on:
+      api: { condition: service_started }
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    env_file: [.env]
+    ports: ["3000:3000"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  storage:

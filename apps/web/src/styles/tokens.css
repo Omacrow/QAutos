@@ -1,0 +1,109 @@
+/*
+ * Design tokens: the ONLY place colors, radii, shadows and fonts are defined.
+ * Components use semantic Tailwind classes (bg-surface, text-muted-foreground,
+ * border-border, bg-primary, ...) mapped in globals.css, never raw values.
+ * To adopt a shared design system, replace the values below.
+ *
+ * Names follow shadcn/ui conventions so a shadcn theme drops in directly.
+ *
+ * Direction: black + signal orange, visible 1px grid lines (boxed sections),
+ * restrained glow. Dark is the default; light is for long review sessions.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --background: #070707;
+  --background-gradient:
+    radial-gradient(900px 500px at 80% -10%, rgb(255 106 26 / 0.14), transparent 60%), #070707;
+  --surface: rgb(20 20 20 / 0.8); /* panel */
+  --surface-solid: #101010;
+  --surface-raised: #171717;
+  --overlay: rgb(0 0 0 / 0.7);
+
+  /* Text */
+  --foreground: #f5f3f0;
+  --muted-foreground: #a3a09b;
+  --subtle-foreground: #6b6865;
+
+  /* Lines: the grid lines are part of the look, keep them visible */
+  --border: #232120;
+  --border-strong: #3a3633;
+  --grid-line: rgb(255 255 255 / 0.05);
+  --ring: #ff7a33;
+
+  /* Brand */
+  --primary: #ff6a1a;
+  --primary-hover: #ff8340;
+  --primary-foreground: #0a0a0a;
+  --accent: #ffb27a; /* soft orange for highlights */
+  --accent-foreground: #0a0a0a;
+  --muted: rgb(255 255 255 / 0.04);
+
+  /* Answer statuses: fixed meaning across the whole product.
+     Review is yellow (not amber) so it never reads as the brand orange. */
+  --status-approved: #4ade80;
+  --status-approved-bg: rgb(74 222 128 / 0.12);
+  --status-review: #facc15;
+  --status-review-bg: rgb(250 204 21 / 0.12);
+  --status-manual: #fb7185;
+  --status-manual-bg: rgb(251 113 133 / 0.12);
+  --status-library: #93c5fd;
+  --status-library-bg: rgb(147 197 253 / 0.12);
+
+  --danger: #f43f5e;
+  --success: #4ade80;
+  --warning: #facc15;
+
+  /* Shape: squarer than before, to match the boxed layout */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-panel: 0 1px 0 rgb(255 255 255 / 0.03) inset;
+  --blur-panel: 12px;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --background: #faf9f7;
+  --background-gradient:
+    radial-gradient(900px 500px at 80% -10%, rgb(255 106 26 / 0.08), transparent 60%), #faf9f7;
+  --surface: rgb(255 255 255 / 0.9);
+  --surface-solid: #ffffff;
+  --surface-raised: #ffffff;
+  --overlay: rgb(10 10 10 / 0.4);
+
+  --foreground: #141210;
+  --muted-foreground: #57534e;
+  --subtle-foreground: #8a857f;
+
+  --border: #e7e3de;
+  --border-strong: #d0cac3;
+  --grid-line: rgb(0 0 0 / 0.04);
+  --ring: #e85a0c;
+
+  --primary: #e85a0c;
+  --primary-hover: #ff6a1a;
+  --primary-foreground: #ffffff;
+  --accent: #c2410c;
+  --accent-foreground: #ffffff;
+  --muted: rgb(0 0 0 / 0.04);
+
+  --status-approved: #15803d;
+  --status-approved-bg: #dcfce7;
+  --status-review: #a16207;
+  --status-review-bg: #fef9c3;
+  --status-manual: #be123c;
+  --status-manual-bg: #ffe4e6;
+  --status-library: #1d4ed8;
+  --status-library-bg: #dbeafe;
+
+  --danger: #e11d48;
+  --success: #16a34a;
+  --warning: #ca8a04;
+
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.05);
+}
