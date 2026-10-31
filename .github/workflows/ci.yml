@@ -54,6 +54,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          # No root package.json: read the pinned version from the web app.
+          package_json_file: apps/web/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 24
