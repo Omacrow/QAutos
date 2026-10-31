@@ -13,6 +13,7 @@ import {
   type DownloadLink,
   type Me,
   type Member,
+  type SearchResponse,
   uploadDocument,
 } from "./client";
 
@@ -91,6 +92,59 @@ export function useReprocessDocument() {
     mutationFn: (id: string) =>
       apiFetch<DocumentInfo>(`/v1/documents/${id}/reprocess`, getToken, { method: "POST" }),
     onSettled: invalidate,
+  });
+}
+
+/** Search is a POST (the question stays out of URLs and logs); cached per question. */
+export function useSearch(query: string, documentIds?: string[]) {
+  const { getToken, orgKey, isLoaded } = useSession();
+  return useQuery({
+    queryKey: [orgKey, "/v1/search", query, documentIds ?? null],
+    queryFn: () =>
+      apiFetch<SearchResponse>("/v1/search", getToken, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, limit: 10, document_ids: documentIds ?? null }),
+      }),
+    enabled: isLoaded && Boolean(orgKey) && query.trim().length >= 2,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Open a PDF (or a DOCX's PDF rendition) in a new tab at a page. The tab opens
+ * synchronously on click, so popup blockers allow it, then gets the signed link.
+ */
+export function useOpenAtPage() {
+  const { getToken } = useSession();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      page,
+      rendition,
+    }: {
+      id: string;
+      page: number | null;
+      rendition: boolean;
+    }) => {
+      const tab = window.open("", "_blank");
+      try {
+        const params = new URLSearchParams({ inline: "true" });
+        if (rendition) params.set("rendition", "true");
+        const { url } = await apiFetch<DownloadLink>(
+          `/v1/documents/${id}/download?${params}`,
+          getToken,
+          { method: "POST" },
+        );
+        if (tab) {
+          tab.opener = null;
+          tab.location.href = page ? `${url}#page=${page}` : url;
+        }
+      } catch (error) {
+        tab?.close();
+        throw error;
+      }
+    },
   });
 }
 

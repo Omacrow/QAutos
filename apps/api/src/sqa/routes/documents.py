@@ -226,9 +226,12 @@ async def download_document(
     settings: SettingsDep,
     store: StoreDep,
     rendition: bool = False,
+    inline: bool = False,
 ) -> DownloadOut:
     """A short-lived link to the original file, or to the PDF rendition of a DOCX.
 
+    `inline` asks the browser to display a PDF (so a citation can open at its
+    page) instead of saving it. Other types are always downloaded.
     POST rather than GET: it writes an audit event.
     """
     doc = await _get_document(session, ctx, document_id)
@@ -244,6 +247,7 @@ async def download_document(
         filename=filename,
         content_type=content_type,
         expires_in=settings.signed_url_ttl_seconds,
+        inline=inline and content_type == "application/pdf",
     )
     await audit.record(
         session,
@@ -252,7 +256,7 @@ async def download_document(
         actor_clerk_user_id=ctx.user_id,
         target_type="document",
         target_id=str(document_id),
-        details={"rendition": rendition},
+        details={"rendition": rendition, "inline": inline},
     )
     return DownloadOut(url=url, expires_in=settings.signed_url_ttl_seconds)
 

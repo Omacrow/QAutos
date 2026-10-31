@@ -13,7 +13,7 @@ const SECTIONS: { title: string; items: NavItem[] }[] = [
     items: [
       { href: "/dashboard", label: "Overview" },
       { href: "/documents", label: "Documents" },
-      { href: "/search", label: "Search", phase: "1c" },
+      { href: "/search", label: "Search" },
       { href: "/questionnaires", label: "Questionnaires", phase: "2" },
       { href: "/library", label: "Answer Library", phase: "4" },
     ],

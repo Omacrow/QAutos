@@ -41,9 +41,9 @@ async def test_signed_url_round_trip(store: LocalStore) -> None:
         "orgs/a/f.pdf", filename="Policy.pdf", content_type="application/pdf", expires_in=60
     )
     assert url.startswith("http://api.test/v1/files/")
-    path, filename, content_type = store.resolve_token(url.rsplit("/", 1)[1])
+    path, filename, content_type, inline = store.resolve_token(url.rsplit("/", 1)[1])
     assert path.read_bytes() == b"x"
-    assert (filename, content_type) == ("Policy.pdf", "application/pdf")
+    assert (filename, content_type, inline) == ("Policy.pdf", "application/pdf", False)
 
 
 def test_signed_url_rejects_tampering_and_expiry(store: LocalStore) -> None:

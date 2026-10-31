@@ -33,6 +33,12 @@ class Database:
             )
             yield session
 
+    @asynccontextmanager
+    async def tenant_free(self) -> AsyncIterator[AsyncSession]:
+        """No org context: RLS hides every tenant row. For catalog queries only."""
+        async with self._sessions() as session, session.begin():
+            yield session
+
     async def ensure_org(self, clerk_org_id: str, name: str) -> uuid.UUID:
         """Map a Clerk org id to our internal id, creating the org on first sight.
 

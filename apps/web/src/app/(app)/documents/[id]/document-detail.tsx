@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { use, useEffect, useRef, useState } from "react";
 
 import { CitationChip } from "@/components/answer/citation-chip";
 import { StatusBadge } from "@/components/app/document-status";
@@ -146,7 +146,12 @@ function Facts({ doc }: { doc: DocumentInfo }) {
 }
 
 function Passages({ doc }: { doc: DocumentInfo }) {
-  const [offset, setOffset] = useState(0);
+  // ?chunk=N (from a search result) opens the page of passages containing N.
+  const target = Number(useSearchParams().get("chunk") ?? NaN);
+  const focused = Number.isInteger(target) && target >= 0 ? target : null;
+  const [offset, setOffset] = useState(
+    focused === null ? 0 : Math.floor(focused / PAGE_SIZE) * PAGE_SIZE,
+  );
   const chunks = useChunks(doc.id, offset, PAGE_SIZE, true);
   const total = chunks.data?.total ?? doc.chunk_count;
   const end = Math.min(offset + PAGE_SIZE, total);
@@ -165,7 +170,12 @@ function Passages({ doc }: { doc: DocumentInfo }) {
       ) : (
         <ol>
           {chunks.data?.items.map((chunk) => (
-            <Passage key={chunk.id} chunk={chunk} documentName={doc.filename} />
+            <Passage
+              key={chunk.id}
+              chunk={chunk}
+              documentName={doc.filename}
+              focused={chunk.ordinal === focused}
+            />
           ))}
         </ol>
       )}
@@ -193,9 +203,27 @@ function Passages({ doc }: { doc: DocumentInfo }) {
   );
 }
 
-function Passage({ chunk, documentName }: { chunk: Chunk; documentName: string }) {
+function Passage({
+  chunk,
+  documentName,
+  focused,
+}: {
+  chunk: Chunk;
+  documentName: string;
+  focused: boolean;
+}) {
+  const ref = useRef<HTMLLIElement>(null);
+  useEffect(() => {
+    if (focused) ref.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [focused]);
   return (
-    <li className="grid gap-2 border-b border-border px-5 py-4 last:border-b-0 sm:grid-cols-[3rem_1fr]">
+    <li
+      ref={ref}
+      id={`passage-${chunk.ordinal}`}
+      className={`grid scroll-mt-24 gap-2 border-b border-border px-5 py-4 last:border-b-0 sm:grid-cols-[3rem_1fr] ${
+        focused ? "bg-primary/10 shadow-[inset_2px_0_0_var(--primary)]" : ""
+      }`}
+    >
       <span className="font-mono text-xs text-subtle-foreground">#{chunk.ordinal + 1}</span>
       <div className="min-w-0">
         <CitationChip

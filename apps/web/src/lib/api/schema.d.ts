@@ -124,6 +124,8 @@ export interface paths {
          * Download Document
          * @description A short-lived link to the original file, or to the PDF rendition of a DOCX.
          *
+         *     `inline` asks the browser to display a PDF (so a citation can open at its
+         *     page) instead of saving it. Other types are always downloaded.
          *     POST rather than GET: it writes an audit event.
          */
         post: operations["download_document_v1_documents__document_id__download_post"];
@@ -178,6 +180,23 @@ export interface paths {
         get: operations["list_members_v1_org_members_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Search Documents */
+        post: operations["search_documents_v1_search_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -374,6 +393,72 @@ export interface components {
          * @enum {string}
          */
         Role: "viewer" | "editor" | "owner";
+        /** SearchHitOut */
+        SearchHitOut: {
+            /**
+             * Chunk Id
+             * Format: uuid
+             */
+            chunk_id: string;
+            /** Document Filename */
+            document_filename: string;
+            /** Document Has Rendition */
+            document_has_rendition: boolean;
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            document_kind: components["schemas"]["DocumentKind"];
+            /** Heading */
+            heading: string | null;
+            /** Keyword Rank */
+            keyword_rank: number | null;
+            /** Ordinal */
+            ordinal: number;
+            /** Page End */
+            page_end: number | null;
+            /** Page Start */
+            page_start: number | null;
+            /** Rerank Score */
+            rerank_score: number | null;
+            /** Row End */
+            row_end: number | null;
+            /** Row Start */
+            row_start: number | null;
+            /** Sheet */
+            sheet: string | null;
+            /** Text */
+            text: string;
+            /** Vector Similarity */
+            vector_similarity: number | null;
+        };
+        /** SearchOut */
+        SearchOut: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "hybrid" | "keyword_only";
+            /** Reranked */
+            reranked: boolean;
+            /** Results */
+            results: components["schemas"]["SearchHitOut"][];
+            /** Took Ms */
+            took_ms: number;
+        };
+        /** SearchRequest */
+        SearchRequest: {
+            /** Document Ids */
+            document_ids?: string[] | null;
+            /**
+             * Limit
+             * @default 10
+             */
+            limit: number;
+            /** Query */
+            query: string;
+        };
         /** UploadOut */
         UploadOut: {
             document: components["schemas"]["DocumentOut"];
@@ -633,6 +718,7 @@ export interface operations {
         parameters: {
             query?: {
                 rendition?: boolean;
+                inline?: boolean;
             };
             header?: never;
             path: {
@@ -729,6 +815,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"][];
+                };
+            };
+        };
+    };
+    search_documents_v1_search_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SearchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

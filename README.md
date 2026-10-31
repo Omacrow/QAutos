@@ -8,9 +8,9 @@ answer cites the document, page and section it came from and carries a confidenc
 score. When the evidence isn't there, QAutos doesn't guess: the question goes to a
 person.
 
-> **Status: work in progress.** Document upload, indexing and the admin workspace
-> work today. Search, questionnaire import and answer drafting are being built in
-> phases (see [Roadmap](#roadmap)).
+> **Status: work in progress.** Document upload, indexing, search with citations and
+> the admin workspace work today. Questionnaire import and answer drafting are being
+> built in phases (see [Roadmap](#roadmap)).
 
 ## How it works
 
@@ -109,9 +109,25 @@ cd apps/web
 pnpm test && pnpm typecheck && pnpm lint
 ```
 
-CI runs all of it and fails if the isolation tests can't reach a database.
+CI runs all of it and fails if the isolation tests can't reach a database or if
+retrieval quality drops below the benchmark floor. To benchmark a configuration
+(for example with Voyage embeddings and reranking) against the demo documents:
+
+```sh
+uv run python scripts/eval_retrieval.py
+```
 
 ## Deployment
+
+### Website preview (GitHub Pages)
+
+The marketing site and its scripted live demo are published to GitHub Pages by
+`.github/workflows/pages.yml` on every push to `main` that touches `apps/web`.
+It builds with `NEXT_PUBLIC_STATIC_PREVIEW=1`: a static export without the
+workspace, sign-in or demo endpoints, since Pages has no server. One-time setup:
+**Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+### Full application
 
 QAutos is set up for [Railway](https://railway.com) with five services: web, api,
 worker, Postgres (pgvector) and Redis. Each app service has a config file
@@ -127,7 +143,7 @@ embedding provider's dashboard.
 
 - [x] Multi-tenant foundation: auth, roles, row-level security, audit log
 - [x] Document upload and indexing with page-level citations
-- [ ] Search with citations, and a retrieval quality benchmark
+- [x] Search with citations, and a retrieval quality benchmark
 - [ ] Questionnaire import from any format, including scans
 - [ ] Answer drafting with an evidence gate and confidence scores
 - [ ] Review workflow and export to the original format
@@ -139,3 +155,4 @@ embedding provider's dashboard.
 - [0002 Confidence and extraction](docs/adr/0002-confidence-and-extraction.md):
   how answers are scored and questionnaires are read
 - [0003 Ingestion](docs/adr/0003-ingestion.md): how documents become cited passages
+- [0004 Retrieval](docs/adr/0004-retrieval.md): hybrid search and how it is measured

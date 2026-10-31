@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
 import { buttonClasses } from "@/components/ui/button";
 import { BRAND } from "@/config/brand";
 import { DEMO_ENABLED } from "@/config/demo";
+import { REPO_URL, STATIC_PREVIEW } from "@/config/site";
 import {
   COMPARISON,
   CONFIDENCE_SIGNALS,
@@ -20,9 +21,16 @@ import {
   TESTIMONIALS,
 } from "@/content/marketing";
 
-const primaryCta = DEMO_ENABLED
-  ? { href: "/demo", label: "Try the live demo" }
-  : { href: "/sign-up", label: "Get started" };
+const primaryCta = STATIC_PREVIEW
+  ? { href: "#demo", label: "See the live demo" }
+  : DEMO_ENABLED
+    ? { href: "/demo", label: "Try the live demo" }
+    : { href: "/sign-up", label: "Get started" };
+
+// Static preview: no accounts yet, so the second action points at the code.
+const secondaryCta = STATIC_PREVIEW
+  ? { href: REPO_URL, label: "Follow the build on GitHub" }
+  : { href: "/sign-up", label: "Create an account" };
 
 export default function Landing() {
   return (
@@ -42,7 +50,7 @@ export default function Landing() {
           <div className="mt-12 border border-border">
             <LiveDemo />
           </div>
-          {DEMO_ENABLED && (
+          {DEMO_ENABLED && !STATIC_PREVIEW && (
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <Link href="/demo" className={buttonClasses("primary", "md")}>
                 Open the demo workspace →
@@ -365,12 +373,12 @@ function FinalCta() {
           <Link href={primaryCta.href} className={buttonClasses("inverse", "lg")}>
             {primaryCta.label.toUpperCase()}
           </Link>
-          <Link
-            href="/sign-up"
+          <a
+            href={secondaryCta.href}
             className="inline-flex h-12 items-center border border-primary-foreground/30 px-6 font-medium hover:bg-primary-foreground/10"
           >
-            Create an account
-          </Link>
+            {secondaryCta.label}
+          </a>
         </div>
       </div>
     </Section>

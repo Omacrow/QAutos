@@ -15,7 +15,7 @@ async def download_file(token: str, request: Request) -> FileResponse:
     if not isinstance(store, LocalStore):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Not found")
     try:
-        path, filename, content_type = store.resolve_token(token)
+        path, filename, content_type, inline = store.resolve_token(token)
     except (jwt.InvalidTokenError, ValueError):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Link invalid or expired") from None
     if not path.is_file():
@@ -24,7 +24,7 @@ async def download_file(token: str, request: Request) -> FileResponse:
         path,
         media_type=content_type or "application/octet-stream",
         headers={
-            "Content-Disposition": content_disposition(filename or path.name),
+            "Content-Disposition": content_disposition(filename or path.name, inline=inline),
             "Cache-Control": "private, no-store",
         },
     )

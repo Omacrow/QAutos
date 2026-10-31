@@ -33,7 +33,7 @@ class ObjectStore(Protocol):
     async def delete(self, key: str) -> None: ...
 
     async def signed_url(
-        self, key: str, *, filename: str, content_type: str, expires_in: int
+        self, key: str, *, filename: str, content_type: str, expires_in: int, inline: bool = False
     ) -> str: ...
 
 
@@ -41,10 +41,11 @@ def document_key(org_id: uuid.UUID, document_id: uuid.UUID, name: str) -> str:
     return f"orgs/{org_id}/documents/{document_id}/{name}"
 
 
-def content_disposition(filename: str) -> str:
-    """RFC 6266 attachment header with an ASCII fallback and a UTF-8 name."""
+def content_disposition(filename: str, *, inline: bool = False) -> str:
+    """RFC 6266 header with an ASCII fallback and a UTF-8 name."""
     ascii_name = filename.encode("ascii", "replace").decode().replace('"', "")
-    return f"attachment; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(filename)}"
+    kind = "inline" if inline else "attachment"
+    return f"{kind}; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(filename)}"
 
 
 class S3Store:
@@ -93,7 +94,7 @@ class S3Store:
         await asyncio.to_thread(self._client.delete_object, Bucket=self._bucket, Key=key)
 
     async def signed_url(
-        self, key: str, *, filename: str, content_type: str, expires_in: int
+        self, key: str, *, filename: str, content_type: str, expires_in: int, inline: bool = False
     ) -> str:
         url: str = await asyncio.to_thread(
             self._client.generate_presigned_url,
@@ -101,7 +102,7 @@ class S3Store:
             Params={
                 "Bucket": self._bucket,
                 "Key": key,
-                "ResponseContentDisposition": content_disposition(filename),
+                "ResponseContentDisposition": content_disposition(filename, inline=inline),
                 "ResponseContentType": content_type,
             },
             ExpiresIn=expires_in,
@@ -133,7 +134,7 @@ class LocalStore:
         self._path(key).unlink(missing_ok=True)
 
     async def signed_url(
-        self, key: str, *, filename: str, content_type: str, expires_in: int
+        self, key: str, *, filename: str, content_type: str, expires_in: int, inline: bool = False
     ) -> str:
         now = int(time.time())
         token = jwt.encode(
@@ -142,6 +143,7 @@ class LocalStore:
                 "k": key,
                 "fn": filename,
                 "ct": content_type,
+                "in": inline,
                 "iat": now,
                 "exp": now + expires_in,
             },
@@ -150,8 +152,8 @@ class LocalStore:
         )
         return f"{self._base}/v1/files/{token}"
 
-    def resolve_token(self, token: str) -> tuple[Path, str, str]:
-        """Verify a download token. Returns (path, filename, content type)."""
+    def resolve_token(self, token: str) -> tuple[Path, str, str, bool]:
+        """Verify a download token. Returns (path, filename, content type, inline)."""
         claims = jwt.decode(
             token,
             self._secret,
@@ -159,7 +161,12 @@ class LocalStore:
             issuer=_FILE_TOKEN_ISSUER,
             options={"require": ["exp", "iss", "k"]},
         )
-        return self._path(claims["k"]), str(claims.get("fn", "")), str(claims.get("ct", ""))
+        return (
+            self._path(claims["k"]),
+            str(claims.get("fn", "")),
+            str(claims.get("ct", "")),
+            bool(claims.get("in", False)),
+        )
 
 
 def make_store(settings: Settings, *, local_secret: str) -> ObjectStore:

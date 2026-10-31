@@ -325,6 +325,17 @@ async def seed_demo_documents(
         )
     if count:
         return
+    created = await add_sample_documents(db, store, queue, org_id)
+    log.info("demo_documents_seeded", count=len(created))
+
+
+async def add_sample_documents(
+    db: Database, store: ObjectStore, queue: JobQueue, org_id: uuid.UUID
+) -> list[uuid.UUID]:
+    """Store the sample files in `org_id` and queue their ingestion.
+
+    Also used by the retrieval benchmark, which runs against a throwaway org.
+    """
     created: list[uuid.UUID] = []
     for filename, kind, build in DEMO_FILES:
         data = build()
@@ -348,4 +359,4 @@ async def seed_demo_documents(
         created.append(document_id)
     for document_id in created:
         await queue.enqueue_ingest(org_id, document_id)
-    log.info("demo_documents_seeded", count=len(created))
+    return created

@@ -83,6 +83,11 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr | None = None
     openai_base_url: str = "https://api.openai.com/v1"
 
+    # Reranking re-scores the top search candidates with a cross-encoder. Its
+    # score is what Phase 2's evidence gate thresholds on.
+    rerank_provider: Literal["voyage", "none"] = "none"
+    rerank_model: str = "rerank-2.5"
+
     # Shared demo org: off by default so anonymous visitors can't store files.
     demo_allow_uploads: bool = False
 

@@ -19,7 +19,9 @@ from sqa.db.session import Database
 from sqa.embeddings import make_embedder
 from sqa.ingestion.pipeline import IngestDeps, make_deps
 from sqa.queue import ArqQueue, InlineQueue, JobQueue
-from sqa.routes import documents, files, health, org, webhooks
+from sqa.retrieval.rerank import make_reranker
+from sqa.retrieval.search import supports_iterative_scan
+from sqa.routes import documents, files, health, org, search, webhooks
 from sqa.services.demo import seed_demo_org
 from sqa.services.demo_documents import seed_demo_documents
 from sqa.storage import make_store
@@ -78,6 +80,9 @@ def create_app(
         queue = await _make_queue(settings, make_deps(db, store, embedder, settings))
         app.state.store = store
         app.state.embedder = embedder
+        app.state.reranker = make_reranker(settings)
+        async with db.tenant_free() as session:
+            app.state.iterative_scan = await supports_iterative_scan(session)
         app.state.queue = queue
         app.state.demo_verifier = None
         if settings.demo_jwt_secret is not None:
@@ -93,6 +98,8 @@ def create_app(
         finally:
             await queue.aclose()
             await embedder.aclose()
+            if app.state.reranker is not None:
+                await app.state.reranker.aclose()
             await redis_client.aclose()
             await db.dispose()
 
@@ -125,6 +132,7 @@ def create_app(
     app.include_router(health.router)
     app.include_router(org.router)
     app.include_router(documents.router)
+    app.include_router(search.router)
     app.include_router(files.router)
     app.include_router(webhooks.router)
     return app

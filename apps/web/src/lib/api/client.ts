@@ -10,6 +10,8 @@ export type Chunk = components["schemas"]["ChunkOut"];
 export type ChunkPage = components["schemas"]["ChunkPage"];
 export type UploadResult = components["schemas"]["UploadOut"];
 export type DownloadLink = components["schemas"]["DownloadOut"];
+export type SearchResponse = components["schemas"]["SearchOut"];
+export type SearchHit = components["schemas"]["SearchHitOut"];
 
 export class ApiError extends Error {
   constructor(

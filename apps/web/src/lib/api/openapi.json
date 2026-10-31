@@ -491,6 +491,231 @@
         "title": "Role",
         "type": "string"
       },
+      "SearchHitOut": {
+        "properties": {
+          "chunk_id": {
+            "format": "uuid",
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "document_filename": {
+            "title": "Document Filename",
+            "type": "string"
+          },
+          "document_has_rendition": {
+            "title": "Document Has Rendition",
+            "type": "boolean"
+          },
+          "document_id": {
+            "format": "uuid",
+            "title": "Document Id",
+            "type": "string"
+          },
+          "document_kind": {
+            "$ref": "#/components/schemas/DocumentKind"
+          },
+          "heading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading"
+          },
+          "keyword_rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyword Rank"
+          },
+          "ordinal": {
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "page_end": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page End"
+          },
+          "page_start": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Start"
+          },
+          "rerank_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rerank Score"
+          },
+          "row_end": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row End"
+          },
+          "row_start": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Start"
+          },
+          "sheet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sheet"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "vector_similarity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector Similarity"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "document_id",
+          "document_filename",
+          "document_kind",
+          "document_has_rendition",
+          "ordinal",
+          "text",
+          "heading",
+          "page_start",
+          "page_end",
+          "sheet",
+          "row_start",
+          "row_end",
+          "vector_similarity",
+          "keyword_rank",
+          "rerank_score"
+        ],
+        "title": "SearchHitOut",
+        "type": "object"
+      },
+      "SearchOut": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "hybrid",
+              "keyword_only"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "reranked": {
+            "title": "Reranked",
+            "type": "boolean"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SearchHitOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "took_ms": {
+            "title": "Took Ms",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "results",
+          "mode",
+          "reranked",
+          "took_ms"
+        ],
+        "title": "SearchOut",
+        "type": "object"
+      },
+      "SearchRequest": {
+        "properties": {
+          "document_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Ids"
+          },
+          "limit": {
+            "default": 10,
+            "maximum": 25.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "query": {
+            "maxLength": 1000,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "SearchRequest",
+        "type": "object"
+      },
       "UploadOut": {
         "properties": {
           "document": {
@@ -557,7 +782,7 @@
     }
   },
   "info": {
-    "title": "SQA API",
+    "title": "QAutos API",
     "version": "0.1.0"
   },
   "openapi": "3.1.0",
@@ -903,7 +1128,7 @@
     },
     "/v1/documents/{document_id}/download": {
       "post": {
-        "description": "A short-lived link to the original file, or to the PDF rendition of a DOCX.\n\nPOST rather than GET: it writes an audit event.",
+        "description": "A short-lived link to the original file, or to the PDF rendition of a DOCX.\n\n`inline` asks the browser to display a PDF (so a citation can open at its\npage) instead of saving it. Other types are always downloaded.\nPOST rather than GET: it writes an audit event.",
         "operationId": "download_document_v1_documents__document_id__download_post",
         "parameters": [
           {
@@ -923,6 +1148,16 @@
             "schema": {
               "default": false,
               "title": "Rendition",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inline",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Inline",
               "type": "boolean"
             }
           }
@@ -1061,6 +1296,52 @@
         "summary": "List Members",
         "tags": [
           "org"
+        ]
+      }
+    },
+    "/v1/search": {
+      "post": {
+        "operationId": "search_documents_v1_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Search Documents",
+        "tags": [
+          "search"
         ]
       }
     },

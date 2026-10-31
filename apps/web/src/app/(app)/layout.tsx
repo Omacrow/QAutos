@@ -4,6 +4,7 @@ import Link from "next/link";
 import { type ReactNode, Suspense } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { ClerkRoot } from "@/components/clerk-root";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,9 +16,11 @@ import { SideNav } from "./side-nav";
 // streams in behind Suspense (required by Cache Components).
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={<ShellSkeleton />}>
-      <SessionShell>{children}</SessionShell>
-    </Suspense>
+    <ClerkRoot>
+      <Suspense fallback={<ShellSkeleton />}>
+        <SessionShell>{children}</SessionShell>
+      </Suspense>
+    </ClerkRoot>
   );
 }
 

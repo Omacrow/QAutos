@@ -1,0 +1,153 @@
+[
+  {
+    "id": "mfa",
+    "question": "Is multi-factor authentication enforced for all staff?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "2.1 Authentication"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 8}
+    ]
+  },
+  {
+    "id": "access-reviews",
+    "question": "How often do you review who has access to systems?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "2.2 Authorization"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 9}
+    ]
+  },
+  {
+    "id": "encryption-at-rest",
+    "question": "What encryption protects stored customer data?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "3.1 Data at Rest"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 5}
+    ]
+  },
+  {
+    "id": "tls",
+    "question": "Which TLS versions are allowed for connections to your service?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "3.2 Data in Transit"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 6}
+    ]
+  },
+  {
+    "id": "log-retention",
+    "question": "How long do you retain security event logs?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "4. Logging"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 10}
+    ]
+  },
+  {
+    "id": "breach-notification",
+    "question": "How quickly will you tell us if our data is breached?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "5. Incident Response"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 11}
+    ]
+  },
+  {
+    "id": "vendor-risk",
+    "question": "How do you evaluate the security of your subprocessors?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "6. Vendor Management"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 12}
+    ]
+  },
+  {
+    "id": "pentest",
+    "question": "Does an outside company perform penetration testing, and how often?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "7. Secure Development"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 13}
+    ]
+  },
+  {
+    "id": "data-deletion",
+    "question": "What happens to our data after the contract ends?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "8. Data Retention"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 7}
+    ]
+  },
+  {
+    "id": "rto",
+    "question": "What is your recovery time objective for the production service?",
+    "targets": [
+      {"document": "Northwind Business Continuity Plan.docx", "heading": "Recovery Objectives"},
+      {"document": "Northwind Business Continuity Plan.docx", "heading": "Testing"}
+    ]
+  },
+  {
+    "id": "restore-tests",
+    "question": "Do you regularly test restoring from backups?",
+    "targets": [
+      {"document": "Northwind Business Continuity Plan.docx", "heading": "Backups"},
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 4}
+    ]
+  },
+  {
+    "id": "multi-az",
+    "question": "Is the platform resilient to the loss of a single data center?",
+    "targets": [
+      {"document": "Northwind Business Continuity Plan.docx", "heading": "Infrastructure Resilience"}
+    ]
+  },
+  {
+    "id": "dr-exercise",
+    "question": "When did you last exercise disaster recovery, and did it meet targets?",
+    "targets": [
+      {"document": "Northwind Business Continuity Plan.docx", "heading": "Testing"}
+    ]
+  },
+  {
+    "id": "policy-owner",
+    "question": "Who is responsible for approving the information security policy?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "1. Purpose and Scope"}
+    ]
+  },
+  {
+    "id": "standing-access",
+    "question": "Do engineers have permanent administrative access to production?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "2.2 Authorization"}
+    ]
+  },
+  {
+    "id": "code-review",
+    "question": "Are code changes reviewed by a second developer before release?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "7. Secure Development"}
+    ]
+  },
+  {
+    "id": "awareness-training",
+    "question": "Do employees receive security awareness training?",
+    "targets": [
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 14}
+    ]
+  },
+  {
+    "id": "soc2",
+    "question": "Do you have a current SOC 2 Type II report?",
+    "targets": [
+      {"document": "Northwind CAIQ v4 Responses 2025.xlsx", "row": 3}
+    ]
+  },
+  {
+    "id": "static-keys",
+    "question": "Are long-lived API keys permitted for service accounts?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "2.1 Authentication"}
+    ]
+  },
+  {
+    "id": "ir-tested",
+    "question": "Is the incident response plan tested?",
+    "targets": [
+      {"document": "Northwind Information Security Policy.pdf", "heading": "5. Incident Response"}
+    ]
+  }
+]
