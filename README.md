@@ -8,9 +8,9 @@ answer cites the document, page and section it came from and carries a confidenc
 score. When the evidence isn't there, QAutos doesn't guess: the question goes to a
 person.
 
-> **Status: work in progress.** Document upload, indexing, search with citations and
-> the admin workspace work today. Questionnaire import and answer drafting are being
-> built in phases (see [Roadmap](#roadmap)).
+> **Status: work in progress.** Document upload, indexing, search with citations,
+> questionnaire import (any format, including scans) and the admin workspace work
+> today. Answer drafting is next (see [Roadmap](#roadmap)).
 
 ## How it works
 
@@ -18,7 +18,9 @@ person.
    past questionnaires (PDF, DOCX, XLSX).
 2. **QAutos indexes it.** Text is extracted with real page numbers and section
    headings, split into passages that never cross a section, and embedded for search.
-3. **Import a questionnaire** *(coming)*. Any format, including scanned PDFs and images.
+3. **Import a questionnaire.** XLSX, CSV, DOCX, PDF, XML, scanned PDFs and photos. Every
+   question is found with its section and the exact cell or page its answer belongs in;
+   scans are read with local OCR (PaddleOCR models, no data leaves the server).
 4. **Get drafted answers** *(coming)*. Each one cites its sources and comes with a
    confidence score built from measurable signals (retrieval strength, an independent
    check of each claim, agreement with previously approved answers).
@@ -47,9 +49,10 @@ person.
 | API | FastAPI, SQLAlchemy 2 (async), Pydantic |
 | Worker | arq on Redis |
 | Database | PostgreSQL + pgvector (HNSW), row-level security |
-| Documents | PyMuPDF, LibreOffice (DOCX → PDF), openpyxl |
+| Documents | PyMuPDF, LibreOffice (DOCX → PDF), openpyxl, python-docx |
+| OCR | PaddleOCR models via RapidOCR (ONNX, CPU); Claude vision optional |
 | Embeddings | Voyage AI or any OpenAI-compatible API (swappable) |
-| LLM | Claude API *(answer drafting, coming)* |
+| Models | Local / open models by default; Claude API as an optional engine |
 | Storage | S3-compatible (Cloudflare R2, AWS S3) |
 | Hosting | Railway (web, api, worker, Postgres, Redis) |
 
@@ -110,7 +113,7 @@ pnpm test && pnpm typecheck && pnpm lint
 ```
 
 CI runs all of it and fails if the isolation tests can't reach a database or if
-retrieval quality drops below the benchmark floor. To benchmark a configuration
+retrieval or questionnaire-extraction quality drops below its benchmark floor. To benchmark a configuration
 (for example with Voyage embeddings and reranking) against the demo documents:
 
 ```sh
@@ -144,7 +147,7 @@ embedding provider's dashboard.
 - [x] Multi-tenant foundation: auth, roles, row-level security, audit log
 - [x] Document upload and indexing with page-level citations
 - [x] Search with citations, and a retrieval quality benchmark
-- [ ] Questionnaire import from any format, including scans
+- [x] Questionnaire import from any format, including scans
 - [ ] Answer drafting with an evidence gate and confidence scores
 - [ ] Review workflow and export to the original format
 - [ ] Answer Library
@@ -156,3 +159,4 @@ embedding provider's dashboard.
   how answers are scored and questionnaires are read
 - [0003 Ingestion](docs/adr/0003-ingestion.md): how documents become cited passages
 - [0004 Retrieval](docs/adr/0004-retrieval.md): hybrid search and how it is measured
+- [0005 Questionnaire import](docs/adr/0005-questionnaire-import.md): extraction, OCR and its benchmark

@@ -59,7 +59,25 @@ StoreDep = Annotated[ObjectStore, Depends(get_store)]
 QueueDep = Annotated[JobQueue, Depends(get_queue)]
 
 
-def _check_writable(ctx: OrgContext, settings: Settings) -> None:
+async def read_upload(file: UploadFile, settings: Settings) -> tuple[bytes, str]:
+    """The file's bytes (size-checked) and a safe display name."""
+    data = await file.read(settings.max_upload_bytes + 1)
+    if len(data) > settings.max_upload_bytes:
+        raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "The file is too large.")
+    if not data:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "The file is empty.")
+    return data, safe_filename(file.filename or "")
+
+
+def rejection(code: str, supported: str = "PDF, DOCX and XLSX") -> HTTPException:
+    """HTTP error for a file rejected at upload."""
+    status_code, message = _REJECTIONS.get(code, _REJECTIONS["corrupt"])
+    if code == "unsupported_type":
+        message = f"Only {supported} files are supported."
+    return HTTPException(status_code, message)
+
+
+def check_writable(ctx: OrgContext, settings: Settings) -> None:
     """The shared demo org is read-only unless explicitly opened up."""
     if ctx.clerk_org_id == settings.demo_clerk_org_id and not settings.demo_allow_uploads:
         raise HTTPException(
@@ -103,18 +121,12 @@ async def upload_document(
     store: StoreDep,
     queue: QueueDep,
 ) -> UploadOut:
-    _check_writable(ctx, settings)
-    data = await file.read(settings.max_upload_bytes + 1)
-    if len(data) > settings.max_upload_bytes:
-        raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "The file is too large.")
-    if not data:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "The file is empty.")
-    filename = safe_filename(file.filename or "")
+    check_writable(ctx, settings)
+    data, filename = await read_upload(file, settings)
     try:
         kind = detect_kind(filename, data)
     except IngestError as exc:
-        code, message = _REJECTIONS[exc.code]
-        raise HTTPException(code, message) from None
+        raise rejection(exc.code) from None
 
     sha256 = hashlib.sha256(data).hexdigest()
     existing = await _find_by_hash(db, ctx.org_id, sha256)
@@ -269,7 +281,7 @@ async def reprocess_document(
     db: DatabaseDep,
     queue: QueueDep,
 ) -> DocumentOut:
-    _check_writable(ctx, settings)
+    check_writable(ctx, settings)
     async with db.tenant(ctx.org_id) as session:
         doc = await _get_document(session, ctx, document_id)
         doc.status = DocumentStatus.QUEUED
@@ -296,7 +308,7 @@ async def delete_document(
     store: StoreDep,
 ) -> None:
     """Deletes the document, its chunks (cascade) and its stored files."""
-    _check_writable(ctx, settings)
+    check_writable(ctx, settings)
     async with db.tenant(ctx.org_id) as session:
         doc = await _get_document(session, ctx, document_id)
         keys = [k for k in (doc.storage_key, doc.rendition_key) if k]

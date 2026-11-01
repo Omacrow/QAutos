@@ -88,8 +88,20 @@ class Settings(BaseSettings):
     rerank_provider: Literal["voyage", "none"] = "none"
     rerank_model: str = "rerank-2.5"
 
+    # Scanned questionnaires and images. "local": PaddleOCR models via RapidOCR
+    # (ONNX, CPU, offline). "claude": optional Claude vision engine (needs a key).
+    questionnaire_ocr: Literal["local", "claude", "none"] = "local"
+    max_ocr_pages: int = 50
+    max_questionnaire_questions: int = 3000
+
+    # Optional Claude API engine. The default path uses local models only.
+    anthropic_api_key: SecretStr | None = None
+    anthropic_model_extract: str = "claude-opus-5-5"
+
     # Shared demo org: off by default so anonymous visitors can't store files.
     demo_allow_uploads: bool = False
+    # Fill an empty demo org with the Northwind sample documents and questionnaire.
+    demo_seed: bool = True
 
     @model_validator(mode="after")
     def _check_dev_only_backends(self) -> "Settings":

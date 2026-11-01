@@ -17,7 +17,8 @@ from sqa.core.config import Settings
 from sqa.core.logging import get_logger
 from sqa.db.session import Database
 from sqa.ingestion.validate import CONTENT_TYPES
-from sqa.models import Document, DocumentKind
+from sqa.models import Document, DocumentKind, Questionnaire, QuestionnaireKind
+from sqa.questionnaires.readers import CONTENT_TYPES as QUESTIONNAIRE_TYPES
 from sqa.queue import JobQueue
 from sqa.storage import ObjectStore, document_key
 
@@ -326,6 +327,7 @@ async def seed_demo_documents(
     if count:
         return
     created = await add_sample_documents(db, store, queue, org_id)
+    await add_sample_questionnaire(db, store, queue, org_id)
     log.info("demo_documents_seeded", count=len(created))
 
 
@@ -360,3 +362,69 @@ async def add_sample_documents(
     for document_id in created:
         await queue.enqueue_ingest(org_id, document_id)
     return created
+
+
+# A customer questionnaire for the demo, answerable from the Northwind documents.
+DEMO_QUESTIONNAIRE_NAME = "Acme Health - Vendor Security Assessment.xlsx"
+DEMO_QUESTIONS: list[tuple[str, str, str]] = [
+    ("Access Control", "AC-1", "Is multi-factor authentication required for all workforce access?"),
+    ("Access Control", "AC-2", "How often are user access rights reviewed?"),
+    ("Access Control", "AC-3", "How quickly is access removed when an employee leaves?"),
+    ("Encryption", "EN-1", "Is customer data encrypted at rest? Which algorithm is used?"),
+    ("Encryption", "EN-2", "Which TLS versions do you support for data in transit?"),
+    ("Operations", "OP-1", "How long are security logs retained?"),
+    ("Operations", "OP-2", "What are your recovery time and recovery point objectives?"),
+    ("Operations", "OP-3", "How often do you test restoring from backups?"),
+    (
+        "Incident Response",
+        "IR-1",
+        "Within what timeframe are customers notified of a security incident?",
+    ),
+    ("Vendor Management", "VM-1", "How do you assess the security of your subprocessors?"),
+    ("Privacy", "PR-1", "Do you support bring-your-own-key encryption?"),
+    ("Privacy", "PR-2", "What happens to our data when the contract ends?"),
+]
+
+
+def build_demo_questionnaire() -> bytes:
+    workbook = Workbook()
+    sheet = workbook.active
+    assert sheet is not None
+    sheet.title = "Assessment"
+    sheet.append(["Acme Health - Vendor Security Assessment"])
+    sheet.append(["Ref", "Question", "Vendor Response", "Comments"])
+    current = None
+    for section, ref, question in DEMO_QUESTIONS:
+        if section != current:
+            sheet.append([section])
+            current = section
+        sheet.append([ref, question, "", ""])
+    out = io.BytesIO()
+    workbook.save(out)
+    return out.getvalue()
+
+
+async def add_sample_questionnaire(
+    db: Database, store: ObjectStore, queue: JobQueue, org_id: uuid.UUID
+) -> uuid.UUID:
+    data = build_demo_questionnaire()
+    questionnaire_id = uuid.uuid4()
+    key = document_key(org_id, questionnaire_id, "questionnaire.xlsx")
+    content_type = QUESTIONNAIRE_TYPES[QuestionnaireKind.XLSX]
+    await store.put(key, data, content_type)
+    async with db.tenant(org_id) as session:
+        session.add(
+            Questionnaire(
+                id=questionnaire_id,
+                org_id=org_id,
+                filename=DEMO_QUESTIONNAIRE_NAME,
+                kind=QuestionnaireKind.XLSX.value,
+                content_type=content_type,
+                size_bytes=len(data),
+                sha256=hashlib.sha256(data).hexdigest(),
+                storage_key=key,
+                uploaded_by="demo:marcus",
+            )
+        )
+    await queue.enqueue_extract(org_id, questionnaire_id)
+    return questionnaire_id

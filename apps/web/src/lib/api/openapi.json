@@ -82,6 +82,20 @@
         "title": "Body_upload_document_v1_documents_post",
         "type": "object"
       },
+      "Body_upload_questionnaire_v1_questionnaires_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_questionnaire_v1_questionnaires_post",
+        "type": "object"
+      },
       "ChunkOut": {
         "properties": {
           "heading": {
@@ -371,6 +385,24 @@
         "title": "HealthOut",
         "type": "object"
       },
+      "MappingIn": {
+        "properties": {
+          "sheets": {
+            "items": {
+              "$ref": "#/components/schemas/SheetMappingIn"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Sheets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sheets"
+        ],
+        "title": "MappingIn",
+        "type": "object"
+      },
       "MeOut": {
         "properties": {
           "org": {
@@ -480,6 +512,371 @@
           "settings"
         ],
         "title": "OrgOut",
+        "type": "object"
+      },
+      "QuestionOut": {
+        "properties": {
+          "edited": {
+            "title": "Edited",
+            "type": "boolean"
+          },
+          "excluded": {
+            "title": "Excluded",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "locator": {
+            "additionalProperties": true,
+            "title": "Locator",
+            "type": "object"
+          },
+          "ordinal": {
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "ordinal",
+          "ref",
+          "section",
+          "text",
+          "locator",
+          "excluded",
+          "edited"
+        ],
+        "title": "QuestionOut",
+        "type": "object"
+      },
+      "QuestionPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "QuestionPage",
+        "type": "object"
+      },
+      "QuestionPatch": {
+        "properties": {
+          "excluded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Excluded"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "maxLength": 4000,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "title": "QuestionPatch",
+        "type": "object"
+      },
+      "QuestionnaireDetailOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "extractor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extractor"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/QuestionnaireKind"
+          },
+          "mapping": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping"
+          },
+          "preview": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview"
+          },
+          "processed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processed At"
+          },
+          "question_count": {
+            "title": "Question Count",
+            "type": "integer"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/QuestionnaireStatus"
+          },
+          "uploaded_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded By"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "kind",
+          "size_bytes",
+          "status",
+          "error_code",
+          "extractor",
+          "question_count",
+          "uploaded_by",
+          "created_at",
+          "processed_at",
+          "mapping",
+          "preview"
+        ],
+        "title": "QuestionnaireDetailOut",
+        "type": "object"
+      },
+      "QuestionnaireKind": {
+        "enum": [
+          "xlsx",
+          "csv",
+          "docx",
+          "pdf",
+          "xml",
+          "image"
+        ],
+        "title": "QuestionnaireKind",
+        "type": "string"
+      },
+      "QuestionnaireOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "extractor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extractor"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/QuestionnaireKind"
+          },
+          "processed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processed At"
+          },
+          "question_count": {
+            "title": "Question Count",
+            "type": "integer"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/QuestionnaireStatus"
+          },
+          "uploaded_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded By"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "kind",
+          "size_bytes",
+          "status",
+          "error_code",
+          "extractor",
+          "question_count",
+          "uploaded_by",
+          "created_at",
+          "processed_at"
+        ],
+        "title": "QuestionnaireOut",
+        "type": "object"
+      },
+      "QuestionnaireStatus": {
+        "enum": [
+          "queued",
+          "extracting",
+          "needs_mapping",
+          "ready",
+          "failed"
+        ],
+        "title": "QuestionnaireStatus",
+        "type": "string"
+      },
+      "QuestionnaireUploadOut": {
+        "properties": {
+          "duplicate": {
+            "title": "Duplicate",
+            "type": "boolean"
+          },
+          "questionnaire": {
+            "$ref": "#/components/schemas/QuestionnaireOut"
+          }
+        },
+        "required": [
+          "questionnaire",
+          "duplicate"
+        ],
+        "title": "QuestionnaireUploadOut",
         "type": "object"
       },
       "Role": {
@@ -714,6 +1111,80 @@
           "query"
         ],
         "title": "SearchRequest",
+        "type": "object"
+      },
+      "SheetMappingIn": {
+        "properties": {
+          "answer_col": {
+            "anyOf": [
+              {
+                "maximum": 500.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer Col"
+          },
+          "comment_col": {
+            "anyOf": [
+              {
+                "maximum": 500.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Col"
+          },
+          "header_row": {
+            "anyOf": [
+              {
+                "maximum": 1000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Header Row"
+          },
+          "question_col": {
+            "maximum": 500.0,
+            "minimum": 0.0,
+            "title": "Question Col",
+            "type": "integer"
+          },
+          "ref_col": {
+            "anyOf": [
+              {
+                "maximum": 500.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Col"
+          },
+          "sheet": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Sheet",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sheet",
+          "question_col"
+        ],
+        "title": "SheetMappingIn",
         "type": "object"
       },
       "UploadOut": {
@@ -1296,6 +1767,425 @@
         "summary": "List Members",
         "tags": [
           "org"
+        ]
+      }
+    },
+    "/v1/questionnaires": {
+      "get": {
+        "operationId": "list_questionnaires_v1_questionnaires_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QuestionnaireOut"
+                  },
+                  "title": "Response List Questionnaires V1 Questionnaires Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Questionnaires",
+        "tags": [
+          "questionnaires"
+        ]
+      },
+      "post": {
+        "operationId": "upload_questionnaire_v1_questionnaires_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_questionnaire_v1_questionnaires_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireUploadOut"
+                }
+              }
+            },
+            "description": "Same file already imported"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireUploadOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Upload Questionnaire",
+        "tags": [
+          "questionnaires"
+        ]
+      }
+    },
+    "/v1/questionnaires/{questionnaire_id}": {
+      "delete": {
+        "operationId": "delete_questionnaire_v1_questionnaires__questionnaire_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Questionnaire",
+        "tags": [
+          "questionnaires"
+        ]
+      },
+      "get": {
+        "operationId": "get_questionnaire_v1_questionnaires__questionnaire_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Questionnaire",
+        "tags": [
+          "questionnaires"
+        ]
+      }
+    },
+    "/v1/questionnaires/{questionnaire_id}/mapping": {
+      "put": {
+        "description": "Choose the question/answer columns by hand, then re-extract with them.",
+        "operationId": "set_mapping_v1_questionnaires__questionnaire_id__mapping_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MappingIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set Mapping",
+        "tags": [
+          "questionnaires"
+        ]
+      }
+    },
+    "/v1/questionnaires/{questionnaire_id}/questions": {
+      "get": {
+        "operationId": "list_questions_v1_questionnaires__questionnaire_id__questions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Questions",
+        "tags": [
+          "questionnaires"
+        ]
+      }
+    },
+    "/v1/questionnaires/{questionnaire_id}/questions/{question_id}": {
+      "patch": {
+        "description": "Fix extraction mistakes: correct a question's text or exclude a non-question.",
+        "operationId": "update_question_v1_questionnaires__questionnaire_id__questions__question_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "question_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Question Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Question",
+        "tags": [
+          "questionnaires"
+        ]
+      }
+    },
+    "/v1/questionnaires/{questionnaire_id}/reextract": {
+      "post": {
+        "description": "Run extraction again with automatic detection (discards a manual mapping and edits).",
+        "operationId": "reextract_v1_questionnaires__questionnaire_id__reextract_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionnaire_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Questionnaire Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionnaireDetailOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reextract",
+        "tags": [
+          "questionnaires"
         ]
       }
     },

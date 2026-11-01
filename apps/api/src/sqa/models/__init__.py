@@ -6,6 +6,12 @@ from sqa.models.documents import (
     DocumentKind,
     DocumentStatus,
 )
+from sqa.models.questionnaires import (
+    Question,
+    Questionnaire,
+    QuestionnaireKind,
+    QuestionnaireStatus,
+)
 from sqa.models.tenancy import AuditEvent, Membership, Organization, Role
 
 __all__ = [
@@ -18,5 +24,9 @@ __all__ = [
     "DocumentStatus",
     "Membership",
     "Organization",
+    "Question",
+    "Questionnaire",
+    "QuestionnaireKind",
+    "QuestionnaireStatus",
     "Role",
 ]

@@ -14,7 +14,7 @@ const SECTIONS: { title: string; items: NavItem[] }[] = [
       { href: "/dashboard", label: "Overview" },
       { href: "/documents", label: "Documents" },
       { href: "/search", label: "Search" },
-      { href: "/questionnaires", label: "Questionnaires", phase: "2" },
+      { href: "/questionnaires", label: "Questionnaires" },
       { href: "/library", label: "Answer Library", phase: "4" },
     ],
   },

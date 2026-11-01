@@ -106,6 +106,12 @@ const ACTION_LABELS: Record<string, string> = {
   "document.downloaded": "Document downloaded",
   "document.reprocessed": "Document reprocessing requested",
   "document.deleted": "Document deleted",
+  "questionnaire.uploaded": "Questionnaire imported",
+  "questionnaire.extracted": "Questions extracted",
+  "questionnaire.failed": "Questionnaire import failed",
+  "questionnaire.mapped": "Questionnaire columns chosen",
+  "questionnaire.deleted": "Questionnaire deleted",
+  "question.updated": "Question edited",
 };
 
 export function AuditList({ events, loading }: { events?: AuditEvent[]; loading: boolean }) {

@@ -1,6 +1,7 @@
 # ADR 0002: Confidence scoring and questionnaire extraction (planned)
 
-**Status:** proposed (Phases 2–3)
+**Status:** proposed (Phases 2–3). The extraction section is superseded by
+[ADR 0005](0005-questionnaire-import.md): local OCR by default, Claude vision optional, no Docling.
 
 ## Confidence
 

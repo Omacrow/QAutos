@@ -11,10 +11,13 @@ from typing import Any, Protocol
 from sqa.ingestion.pipeline import IngestDeps, ingest_document
 
 INGEST_JOB = "ingest_document"
+EXTRACT_JOB = "extract_questionnaire"
 
 
 class JobQueue(Protocol):
     async def enqueue_ingest(self, org_id: uuid.UUID, document_id: uuid.UUID) -> None: ...
+
+    async def enqueue_extract(self, org_id: uuid.UUID, questionnaire_id: uuid.UUID) -> None: ...
 
     async def aclose(self) -> None: ...
 
@@ -26,6 +29,9 @@ class ArqQueue:
     async def enqueue_ingest(self, org_id: uuid.UUID, document_id: uuid.UUID) -> None:
         await self._pool.enqueue_job(INGEST_JOB, str(org_id), str(document_id))
 
+    async def enqueue_extract(self, org_id: uuid.UUID, questionnaire_id: uuid.UUID) -> None:
+        await self._pool.enqueue_job(EXTRACT_JOB, str(org_id), str(questionnaire_id))
+
     async def aclose(self) -> None:
         await self._pool.aclose()
 
@@ -36,6 +42,11 @@ class InlineQueue:
 
     async def enqueue_ingest(self, org_id: uuid.UUID, document_id: uuid.UUID) -> None:
         await ingest_document(self._deps, org_id, document_id)
+
+    async def enqueue_extract(self, org_id: uuid.UUID, questionnaire_id: uuid.UUID) -> None:
+        from sqa.questionnaires.pipeline import extract_questions
+
+        await extract_questions(self._deps, org_id, questionnaire_id)
 
     async def aclose(self) -> None:
         pass

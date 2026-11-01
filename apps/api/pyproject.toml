@@ -23,6 +23,10 @@ dependencies = [
     "python-docx>=1.2.0",
     "boto3>=1.43.122",
     "python-multipart>=0.0.32",
+    "anthropic>=2.3.0",
+    "defusedxml>=0.7.1",
+    "rapidocr-onnxruntime>=1.4.4",
+    "wordninja>=2.0.0",
 ]
 
 [dependency-groups]
@@ -33,6 +37,7 @@ dev = [
     "mypy>=1.13",
     "fakeredis>=2.26",
     "cryptography>=43",
+    "types-defusedxml>=0.7.0.20260504",
 ]
 
 [build-system]
@@ -55,6 +60,7 @@ ignore = ["S101"]  # assert is fine in tests
 "tests/**" = ["S105", "S106", "S608"]  # SQL in tests is built from constants
 "alembic/**" = ["S608"]
 "src/sqa/services/demo_documents.py" = ["E501"]  # sample prose
+"scripts/make_test_corpus.py" = ["E501"]  # sample prose
 
 [tool.mypy]
 strict = true
@@ -64,12 +70,12 @@ mypy_path = "src"
 packages = ["sqa"]
 
 [[tool.mypy.overrides]]
-module = ["arq.*", "svix.*", "pgvector.*", "fakeredis.*", "boto3.*", "botocore.*", "docx.*", "openpyxl.*", "pymupdf.*"]
+module = ["arq.*", "svix.*", "pgvector.*", "fakeredis.*", "boto3.*", "botocore.*", "docx.*", "openpyxl.*", "pymupdf.*", "rapidocr_onnxruntime.*", "wordninja.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 # PyMuPDF ships partial annotations.
-module = ["sqa.ingestion.pdf", "sqa.services.demo_documents"]
+module = ["sqa.ingestion.pdf", "sqa.services.demo_documents", "sqa.questionnaires.ocr"]
 disallow_untyped_calls = false
 
 [tool.pytest.ini_options]

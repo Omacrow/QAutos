@@ -8,7 +8,13 @@ import { AuditList, ErrorState, MembersTable, PageHeader, Panel } from "@/compon
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { hasRole } from "@/lib/api/client";
-import { useAuditEvents, useDocuments, useMe, useMembers } from "@/lib/api/hooks";
+import {
+  useAuditEvents,
+  useDocuments,
+  useMe,
+  useMembers,
+  useQuestionnaires,
+} from "@/lib/api/hooks";
 import { useSession } from "@/lib/session";
 import { readThresholds } from "@/lib/thresholds";
 
@@ -41,6 +47,7 @@ function OrgOverview() {
   const members = useMembers();
   const documents = useDocuments();
   const indexed = documents.data?.filter((d) => d.status === "ready").length ?? 0;
+  const questionnaires = useQuestionnaires();
   const isOwner = hasRole(me.data?.role, "owner");
   const audit = useAuditEvents(isOwner, 6);
 
@@ -67,7 +74,12 @@ function OrgOverview() {
           loading={documents.isPending}
           href="/documents"
         />
-        <Kpi label="Questionnaires" value={0} hint="Import ships in Phase 2" />
+        <Kpi
+          label="Questionnaires"
+          value={questionnaires.data?.length}
+          loading={questionnaires.isPending}
+          href="/questionnaires"
+        />
         <Kpi label="Library answers" value={0} hint="Ships in Phase 4" />
       </div>
 
@@ -138,7 +150,12 @@ function OrgOverview() {
                 indexed > 0,
                 "/documents",
               ],
-              ["Import a questionnaire", "XLSX, CSV, DOCX, PDF. Phase 2.", false, null],
+              [
+                "Import a questionnaire",
+                "Any format, including scans and photos.",
+                Boolean(questionnaires.data?.length),
+                "/questionnaires",
+              ],
             ] as const
           ).map(([title, body, done, href], i) => (
             <li key={title} className="bg-surface-solid p-5">

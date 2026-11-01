@@ -12,10 +12,10 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 FROM base AS runtime
 # Liberation fonts are metric-compatible with Arial/Times/Courier, so pages
-# break where they did in Word.
+# break where they did in Word. libgl1 and libglib2.0-0: OpenCV, used by local OCR.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       libreoffice-writer-nogui fonts-liberation fonts-dejavu-core \
+       libreoffice-writer-nogui fonts-liberation fonts-dejavu-core libgl1 libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 # --create-home: LibreOffice needs a writable home for its profile.
 RUN useradd --system --uid 10001 --create-home app

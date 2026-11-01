@@ -12,6 +12,13 @@ export type UploadResult = components["schemas"]["UploadOut"];
 export type DownloadLink = components["schemas"]["DownloadOut"];
 export type SearchResponse = components["schemas"]["SearchOut"];
 export type SearchHit = components["schemas"]["SearchHitOut"];
+export type Questionnaire = components["schemas"]["QuestionnaireOut"];
+export type QuestionnaireDetail = components["schemas"]["QuestionnaireDetailOut"];
+export type QuestionnaireStatus = components["schemas"]["QuestionnaireStatus"];
+export type QuestionnaireUploadResult = components["schemas"]["QuestionnaireUploadOut"];
+export type Question = components["schemas"]["QuestionOut"];
+export type QuestionPage = components["schemas"]["QuestionPage"];
+export type SheetMappingInput = components["schemas"]["SheetMappingIn"];
 
 export class ApiError extends Error {
   constructor(
@@ -68,6 +75,21 @@ export function uploadDocument(
   const body = new FormData();
   body.append("file", file);
   return apiFetch<UploadResult>("/v1/documents", getToken, { method: "POST", body }, fetchImpl);
+}
+
+export function uploadQuestionnaire(
+  file: File,
+  getToken: TokenGetter,
+  fetchImpl: typeof fetch = fetch,
+): Promise<QuestionnaireUploadResult> {
+  const body = new FormData();
+  body.append("file", file);
+  return apiFetch<QuestionnaireUploadResult>(
+    "/v1/questionnaires",
+    getToken,
+    { method: "POST", body },
+    fetchImpl,
+  );
 }
 
 const ROLE_RANK: Record<Role, number> = { viewer: 0, editor: 1, owner: 2 };

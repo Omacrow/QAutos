@@ -21,7 +21,7 @@ from sqa.ingestion.pipeline import IngestDeps, make_deps
 from sqa.queue import ArqQueue, InlineQueue, JobQueue
 from sqa.retrieval.rerank import make_reranker
 from sqa.retrieval.search import supports_iterative_scan
-from sqa.routes import documents, files, health, org, search, webhooks
+from sqa.routes import documents, files, health, org, questionnaires, search, webhooks
 from sqa.services.demo import seed_demo_org
 from sqa.services.demo_documents import seed_demo_documents
 from sqa.storage import make_store
@@ -91,7 +91,8 @@ def create_app(
                 demo_clerk_org_id=settings.demo_clerk_org_id,
             )
             await seed_demo_org(db, settings)
-            await seed_demo_documents(db, store, queue, settings)
+            if settings.demo_seed:
+                await seed_demo_documents(db, store, queue, settings)
             log.info("demo_mode_enabled")
         try:
             yield
@@ -133,6 +134,7 @@ def create_app(
     app.include_router(org.router)
     app.include_router(documents.router)
     app.include_router(search.router)
+    app.include_router(questionnaires.router)
     app.include_router(files.router)
     app.include_router(webhooks.router)
     return app

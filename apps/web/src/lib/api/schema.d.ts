@@ -186,6 +186,119 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/questionnaires": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Questionnaires */
+        get: operations["list_questionnaires_v1_questionnaires_get"];
+        put?: never;
+        /** Upload Questionnaire */
+        post: operations["upload_questionnaire_v1_questionnaires_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/questionnaires/{questionnaire_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Questionnaire */
+        get: operations["get_questionnaire_v1_questionnaires__questionnaire_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Questionnaire */
+        delete: operations["delete_questionnaire_v1_questionnaires__questionnaire_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/questionnaires/{questionnaire_id}/mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Mapping
+         * @description Choose the question/answer columns by hand, then re-extract with them.
+         */
+        put: operations["set_mapping_v1_questionnaires__questionnaire_id__mapping_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/questionnaires/{questionnaire_id}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Questions */
+        get: operations["list_questions_v1_questionnaires__questionnaire_id__questions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/questionnaires/{questionnaire_id}/questions/{question_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Question
+         * @description Fix extraction mistakes: correct a question's text or exclude a non-question.
+         */
+        patch: operations["update_question_v1_questionnaires__questionnaire_id__questions__question_id__patch"];
+        trace?: never;
+    };
+    "/v1/questionnaires/{questionnaire_id}/reextract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reextract
+         * @description Run extraction again with automatic detection (discards a manual mapping and edits).
+         */
+        post: operations["reextract_v1_questionnaires__questionnaire_id__reextract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/search": {
         parameters: {
             query?: never;
@@ -251,6 +364,11 @@ export interface components {
         };
         /** Body_upload_document_v1_documents_post */
         Body_upload_document_v1_documents_post: {
+            /** File */
+            file: string;
+        };
+        /** Body_upload_questionnaire_v1_questionnaires_post */
+        Body_upload_questionnaire_v1_questionnaires_post: {
             /** File */
             file: string;
         };
@@ -345,6 +463,11 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** MappingIn */
+        MappingIn: {
+            /** Sheets */
+            sheets: components["schemas"]["SheetMappingIn"][];
+        };
         /** MeOut */
         MeOut: {
             org: components["schemas"]["OrgOut"];
@@ -387,6 +510,126 @@ export interface components {
             };
             /** Slug */
             slug: string | null;
+        };
+        /** QuestionOut */
+        QuestionOut: {
+            /** Edited */
+            edited: boolean;
+            /** Excluded */
+            excluded: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Locator */
+            locator: {
+                [key: string]: unknown;
+            };
+            /** Ordinal */
+            ordinal: number;
+            /** Ref */
+            ref: string | null;
+            /** Section */
+            section: string | null;
+            /** Text */
+            text: string;
+        };
+        /** QuestionPage */
+        QuestionPage: {
+            /** Items */
+            items: components["schemas"]["QuestionOut"][];
+            /** Total */
+            total: number;
+        };
+        /** QuestionPatch */
+        QuestionPatch: {
+            /** Excluded */
+            excluded?: boolean | null;
+            /** Text */
+            text?: string | null;
+        };
+        /** QuestionnaireDetailOut */
+        QuestionnaireDetailOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Error Code */
+            error_code: string | null;
+            /** Extractor */
+            extractor: string | null;
+            /** Filename */
+            filename: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["QuestionnaireKind"];
+            /** Mapping */
+            mapping: {
+                [key: string]: unknown;
+            } | null;
+            /** Preview */
+            preview: {
+                [key: string]: unknown;
+            } | null;
+            /** Processed At */
+            processed_at: string | null;
+            /** Question Count */
+            question_count: number;
+            /** Size Bytes */
+            size_bytes: number;
+            status: components["schemas"]["QuestionnaireStatus"];
+            /** Uploaded By */
+            uploaded_by: string | null;
+        };
+        /**
+         * QuestionnaireKind
+         * @enum {string}
+         */
+        QuestionnaireKind: "xlsx" | "csv" | "docx" | "pdf" | "xml" | "image";
+        /** QuestionnaireOut */
+        QuestionnaireOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Error Code */
+            error_code: string | null;
+            /** Extractor */
+            extractor: string | null;
+            /** Filename */
+            filename: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["QuestionnaireKind"];
+            /** Processed At */
+            processed_at: string | null;
+            /** Question Count */
+            question_count: number;
+            /** Size Bytes */
+            size_bytes: number;
+            status: components["schemas"]["QuestionnaireStatus"];
+            /** Uploaded By */
+            uploaded_by: string | null;
+        };
+        /**
+         * QuestionnaireStatus
+         * @enum {string}
+         */
+        QuestionnaireStatus: "queued" | "extracting" | "needs_mapping" | "ready" | "failed";
+        /** QuestionnaireUploadOut */
+        QuestionnaireUploadOut: {
+            /** Duplicate */
+            duplicate: boolean;
+            questionnaire: components["schemas"]["QuestionnaireOut"];
         };
         /**
          * Role
@@ -458,6 +701,21 @@ export interface components {
             limit: number;
             /** Query */
             query: string;
+        };
+        /** SheetMappingIn */
+        SheetMappingIn: {
+            /** Answer Col */
+            answer_col?: number | null;
+            /** Comment Col */
+            comment_col?: number | null;
+            /** Header Row */
+            header_row?: number | null;
+            /** Question Col */
+            question_col: number;
+            /** Ref Col */
+            ref_col?: number | null;
+            /** Sheet */
+            sheet: string;
         };
         /** UploadOut */
         UploadOut: {
@@ -815,6 +1073,264 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"][];
+                };
+            };
+        };
+    };
+    list_questionnaires_v1_questionnaires_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireOut"][];
+                };
+            };
+        };
+    };
+    upload_questionnaire_v1_questionnaires_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_questionnaire_v1_questionnaires_post"];
+            };
+        };
+        responses: {
+            /** @description Same file already imported */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireUploadOut"];
+                };
+            };
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireUploadOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_questionnaire_v1_questionnaires__questionnaire_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionnaire_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_questionnaire_v1_questionnaires__questionnaire_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionnaire_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_mapping_v1_questionnaires__questionnaire_id__mapping_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionnaire_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MappingIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_questions_v1_questionnaires__questionnaire_id__questions_get: {
+        parameters: {
+            query?: {
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                questionnaire_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_question_v1_questionnaires__questionnaire_id__questions__question_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionnaire_id: string;
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reextract_v1_questionnaires__questionnaire_id__reextract_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                questionnaire_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionnaireDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

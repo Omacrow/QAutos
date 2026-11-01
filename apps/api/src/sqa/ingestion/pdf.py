@@ -222,3 +222,29 @@ def _join_lines(lines: list[str]) -> str:
         else:
             text = f"{text} {line}" if text else line
     return text.strip()
+
+
+def read_lines(data: bytes, *, max_pages: int) -> list[tuple[int, str, float, bool]]:
+    """Every text line as (page, text, font size, bold), minus running headers/footers.
+
+    Empty when the PDF has no text layer (a scan). Used by questionnaire import.
+    """
+    try:
+        doc = pymupdf.open(stream=data, filetype="pdf")
+    except Exception:
+        raise IngestError("corrupt") from None
+    with doc:
+        if doc.needs_pass:
+            raise IngestError("encrypted")
+        if doc.page_count > max_pages:
+            raise IngestError("too_many_pages")
+        pages = [_page_blocks(doc[i]) for i in range(doc.page_count)]
+        heights = [doc[i].rect.height for i in range(doc.page_count)]
+    repeated = _running_lines(pages, heights)
+    return [
+        (page_no, line.text, line.size, line.bold)
+        for page_no, blocks in enumerate(pages, start=1)
+        for block in blocks
+        for line in block
+        if _signature(line.text) not in repeated
+    ]
